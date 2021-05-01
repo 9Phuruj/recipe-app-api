@@ -1,11 +1,15 @@
-from python:3.8-alpine
-MAINTAINER Vin Point System Ltd
+FROM python:3.8-alpine
 
 RUN pwd
 WORKDIR /app
 ENV PYTHONUNBUFFERED 1
 COPY requirements.txt requirements.txt
+RUN apk add --update --no-cache postgresql-client
+RUN apk add --update --no-cache --virtual .tmp-build-deps \
+        gcc libc-dev linux-headers postgresql-dev
 RUN pip3 install -r requirements.txt
+RUN apk del .tmp-build-deps
+
 COPY ./app /app
 
 RUN adduser -D user
